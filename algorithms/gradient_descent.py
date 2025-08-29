@@ -11,7 +11,13 @@ def Hypothesis(X: np.ndarray, thetas: np.ndarray, bias: float):
     Returns:
     np.ndarray: Predicted values.
     """ 
-    return X.dot(thetas) + bias
+    result = np.zeros((X.shape[0], 1))
+    
+    for i in range(X.shape[0]):
+        for j in range(X.shape[1]):
+            result[i,0] += X[i,j] * thetas[j,0]
+    
+    return result + bias
 
 def MinSquareError(X: np.ndarray, y: np.ndarray, thetas: np.ndarray, bias: float):
     """
@@ -46,7 +52,12 @@ def UpdateParameters(X: np.ndarray, y: np.ndarray, thetas: np.ndarray, bias: flo
     m = y.shape[0]
     predictions = Hypothesis(X, thetas, bias)
     error = predictions - y
-    sum_errors = X.T.dot(error)
+    sum_errors = np.zeros((X.shape[1], 1))
+     
+    for i in range(X.shape[1]):
+        for j in range(X.shape[0]):
+            sum_errors[i,0] += X[j,i] * error[j,0]
+            
     thetas = thetas - (learning_rate/m) * sum_errors
     bias = bias - (learning_rate/m) * sum(error)
     return thetas, bias
