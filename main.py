@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import pandas as pd
 import algorithms.gradient_descent as gd
+import transform.cleaning as cln
 
 def LoadData(file_path : str):
     """
@@ -19,7 +20,7 @@ def LoadData(file_path : str):
 
 def CleanData(df : pd.DataFrame):
     """
-    Clean the data by eliminating missing values.
+    Clean the data by using specific techniques depending on the column.
     
     Parameters:
     df (pd.DataFrame): The input DataFrame to be cleaned.
@@ -27,15 +28,16 @@ def CleanData(df : pd.DataFrame):
     Returns:
     pd.DataFrame: Cleaned DataFrame.
     """
-    df = df.dropna()
+    df = cln.erase_outliers_by_zscore(df, "Height", 3.0)
+    df = cln.erase_outliers_by_iqr(df, "Weight", 1.5)
+    df = cln.binary_map(df, "Gender", "female", "male")
+
     return df
 
 if __name__ == "__main__":
     
-    #df = LoadData("data/calories.csv")
-    #df = CleanData(df)
-    #print(df.describe())
-    #print(df.info())
+    df = LoadData("data/calories.csv")
+    df = CleanData(df)
     df = pd.DataFrame({
         "A": [1, 2, 3],
         "B": [4, 5, 6],

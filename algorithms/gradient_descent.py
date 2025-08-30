@@ -82,7 +82,6 @@ def GradientDescent(X: np.ndarray, y: np.ndarray, thetas: np.ndarray, bias: floa
         cost = MinSquareError(X, y, thetas, bias)
         if cost < 0.001:
             break
-    
-    print(f"Parameters after training: Thetas: {thetas}, Bias: {bias}")
+        
     return thetas, bias
 
