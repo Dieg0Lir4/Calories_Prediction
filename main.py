@@ -4,6 +4,7 @@ import seaborn as sns
 import pandas as pd
 import algorithms.gradient_descent as gd
 import transform.cleaning as cln
+import visualization.graphs as graphs
 
 def LoadData(file_path : str):
     """
@@ -28,16 +29,35 @@ def CleanData(df : pd.DataFrame):
     Returns:
     pd.DataFrame: Cleaned DataFrame.
     """
-    df = cln.erase_outliers_by_zscore(df, "Height", 3.0)
-    df = cln.erase_outliers_by_iqr(df, "Weight", 1.5)
-    df = cln.binary_map(df, "Gender", "female", "male")
+    df = cln.EraseOutliersByZScore(df, "Height", 3.0)
+    df = cln.EraseOutliersByIQR(df, "Weight", 1.5)
+    df = cln.BinaryMap(df, "Gender", "female", "male")
 
     return df
+
+def VisualizeData(df: pd.DataFrame):
+    """
+    Visualize the cleaned data using various plots.
+
+    Parameters:
+    df (pd.DataFrame): The input DataFrame to visualize.
+    """
+    graphs.Histogram(df, "Age")
+    graphs.Histogram(df, "Height")
+    graphs.Histogram(df, "Weight")
+
 
 if __name__ == "__main__":
     
     df = LoadData("data/calories.csv")
     df = CleanData(df)
+    #VisualizeData(df)
+    df = df[["Age", "Duration", "Heart_Rate", "Body_Temp", "Calories"]]
+    print(df.shape)
+
+
+    
+
     df = pd.DataFrame({
         "A": [1, 2, 3],
         "B": [4, 5, 6],
