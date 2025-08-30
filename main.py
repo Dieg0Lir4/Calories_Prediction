@@ -5,6 +5,7 @@ import pandas as pd
 import algorithms.gradient_descent as gd
 import transform.cleaning as cln
 import visualization.graphs as graphs
+from sklearn.model_selection import train_test_split
 
 def LoadData(file_path : str):
     """
@@ -52,26 +53,36 @@ if __name__ == "__main__":
     df = LoadData("data/calories.csv")
     df = CleanData(df)
     #VisualizeData(df)
-    df = df[["Age", "Duration", "Heart_Rate", "Body_Temp", "Calories"]]
-    print(df.shape)
 
+    X = df[["Age", "Duration", "Heart_Rate", "Body_Temp"]]
+    y = df["Calories"]
 
+    X = (X - X.mean()) / X.std()
+    y = (y - y.mean()) / y.std()
+
+    X_train, X_rest, y_train, y_rest = train_test_split(X, y, test_size=0.3, random_state=42)
+    X_val, X_test, y_val, y_test = train_test_split(X_rest, y_rest, test_size=0.5, random_state=42)
+
+    X_train = X_train.to_numpy()
+    X_val = X_val.to_numpy()
+    X_test = X_test.to_numpy()
+    y_train = y_train.to_numpy().reshape(-1,1)
+    y_val = y_val.to_numpy().reshape(-1,1)
+    y_test = y_test.to_numpy().reshape(-1,1)
+
+    thetas = np.array([1, 1, 1, 1]).reshape(-1,1)
+    bias = 1
+    learning_rate = 0.0001
+    iterations = 10000
+
+    thetas, bias = gd.GradientDescent(X_train, y_train, thetas, bias, learning_rate, iterations)
+
+    y_pred = X_val.dot(thetas) + bias
     
+    mse = sum((y_pred - y_val) ** 2) / y_val.shape[0]
+    print("Validation MSE:", mse)
 
-    df = pd.DataFrame({
-        "A": [1, 2, 3],
-        "B": [4, 5, 6],
-        "C": [7, 8, 9]
-    })
-    
-    X = np.array([[10, 20, 30], [10, 17, 25], [5, 50, 40], [1, 2, 3]]).reshape(-1,3)
-    y = np.array([7, 25, 9, 18]).reshape(-1,1)
-    b = 100
-    thetas = np.array([6, 10, 1]).reshape(3,-1)
+    print("Final Thetas:", thetas)
+    print("Final Bias:", bias)
 
-    bias = 100
-    learning_rate = 0.001
-    iterations = 10
-    gd.GradientDescent(X, y, thetas, bias, learning_rate, iterations)
 
-    
