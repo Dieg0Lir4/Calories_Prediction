@@ -1,2 +1,3 @@
 venv/
 cal_venv/
+__pycache__/
