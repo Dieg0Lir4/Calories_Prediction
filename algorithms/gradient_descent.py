@@ -63,7 +63,7 @@ def UpdateParameters(X: np.ndarray, y: np.ndarray, thetas: np.ndarray, bias: flo
     return thetas, bias
 
 
-def GradientDescent(X: np.ndarray, y: np.ndarray, thetas: np.ndarray, bias: float, learning_rate: float, iterations: int):
+def GradientDescent(X: np.ndarray, y: np.ndarray, thetas: np.ndarray, bias: float, learning_rate: float, iterations: int, X_test: np.ndarray, y_test: np.ndarray):
     """
     Perform gradient descent to optimize model parameters.
     
@@ -77,11 +77,19 @@ def GradientDescent(X: np.ndarray, y: np.ndarray, thetas: np.ndarray, bias: floa
     Returns:
     tuple: Optimized model parameters and bias.
     """
+    last_cost = float("inf")
+    cost_history_train = []
+    cost_history_test = []
+
     for _ in range(iterations):
         thetas, bias = UpdateParameters(X, y, thetas, bias, learning_rate)
         cost = MinSquareError(X, y, thetas, bias)
-        if cost < 0.001:
+        cost_history_train.append(cost)
+        cost_history_test.append(MinSquareError(X_test, y_test, thetas, bias))
+        print("Iteration:", _)
+        if abs(last_cost - cost) < 0.01:
             break
-        
-    return thetas, bias
+        last_cost = cost
+
+    return thetas, bias, cost_history_train, cost_history_test
 
