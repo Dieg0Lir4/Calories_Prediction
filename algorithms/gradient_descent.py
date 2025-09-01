@@ -87,7 +87,7 @@ def GradientDescent(X: np.ndarray, y: np.ndarray, thetas: np.ndarray, bias: floa
         cost_history_train.append(cost)
         cost_history_test.append(MinSquareError(X_test, y_test, thetas, bias))
         print("Iteration:", _)
-        if abs(last_cost - cost) < 0.01:
+        if abs(last_cost - cost) < 0.0001:
             break
         last_cost = cost
 

@@ -48,3 +48,16 @@ def BinaryMap(df: pd.DataFrame, column: str, firstValue: str, secondValue: str):
     """
     df[column] = df[column].map({firstValue: 0, secondValue: 1})
     return df
+
+def EraseOutliersByTemperature(df: pd.DataFrame, max: float = 40.7):
+    """
+    Remove outliers from the 'Body_Temp' column in the DataFrame.
+
+    Parameters:
+    df (pd.DataFrame): Input DataFrame.
+    threshold (float): Body_Temp max to identify outliers.
+
+    Returns:
+    pd.DataFrame: DataFrame without outliers in the 'Body_Temp' column.
+    """
+    return df[df['Body_Temp'] <= max]

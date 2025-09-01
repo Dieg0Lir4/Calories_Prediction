@@ -32,6 +32,7 @@ def CleanData(df : pd.DataFrame):
     """
     df = cln.EraseOutliersByZScore(df, "Height", 3.0)
     df = cln.EraseOutliersByIQR(df, "Weight", 1.5)
+    df = cln.EraseOutliersByTemperature(df, 40.7)
     df = cln.BinaryMap(df, "Gender", "female", "male")
 
     return df
@@ -95,8 +96,21 @@ def PredictSet(X_val: np.ndarray, y_val: np.ndarray, thetas: np.ndarray, bias: f
     r2 = 1 - (sum((predictions - y_val) ** 2) / sum((y_val - y_val.mean()) ** 2))
     print(f"{set_name} R²:", r2)
 
-    mape = sum(abs((predictions - y_val) / y_val)) / y_val.shape[0] * 100
-    print(f"{set_name} MAPE:", mape)
+    print()
+
+def ShowParameters(thetas: np.ndarray, bias: float):
+    """
+    Show the model parameters and bias.
+
+    Parameters:
+    thetas (np.ndarray): Model parameters.
+    bias (float): Model bias.
+    """
+    #Muetra los tthas y al lado el nombre de la columna
+    column_names = ["Age", "Duration", "Heart_Rate", "Body_Temp"]
+    for i, theta in enumerate(thetas):
+        print(f"Theta {i} ({column_names[i]}): {theta[0]}")
+    print("Bias:", bias)
     print()
 
 def VisualizeTraining(cost_history_train: list, cost_history_test: list):
@@ -133,12 +147,14 @@ if __name__ == "__main__":
 
     thetas = np.array([1, 1, 1, 1]).reshape(-1,1)
     bias = 1
-    learning_rate = 0.001
+    learning_rate = 0.1
     iterations = 10000
 
     thetas, bias, cost_history_train, cost_history_test = gd.GradientDescent(X_train, y_train, thetas, bias, learning_rate, iterations, X_test, y_test)
 
+    PredictSet(X_train, y_train, thetas, bias, "Training")
     PredictSet(X_val, y_val, thetas, bias, "Validation")
     PredictSet(X_test, y_test, thetas, bias, "Test")
+    ShowParameters(thetas, bias)
 
     VisualizeTraining(cost_history_train, cost_history_test)
