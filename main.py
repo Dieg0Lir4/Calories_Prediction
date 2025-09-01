@@ -106,7 +106,7 @@ def ShowParameters(thetas: np.ndarray, bias: float):
     thetas (np.ndarray): Model parameters.
     bias (float): Model bias.
     """
-    
+
     column_names = ["Age", "Duration", "Heart_Rate", "Body_Temp"]
     for i, theta in enumerate(thetas):
         print(f"Theta {i} ({column_names[i]}): {theta[0]}")
@@ -139,9 +139,6 @@ if __name__ == "__main__":
 
     X = df[["Age", "Duration", "Heart_Rate", "Body_Temp"]]
     y = df["Calories"]
-
-    X = (X - X.mean()) / X.std()
-    y = (y - y.mean()) / y.std()
 
     X_train, X_val, X_test, y_train, y_val, y_test = PrepareEnviorments(df)
 
