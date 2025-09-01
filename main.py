@@ -106,7 +106,7 @@ def ShowParameters(thetas: np.ndarray, bias: float):
     thetas (np.ndarray): Model parameters.
     bias (float): Model bias.
     """
-    #Muetra los tthas y al lado el nombre de la columna
+    
     column_names = ["Age", "Duration", "Heart_Rate", "Body_Temp"]
     for i, theta in enumerate(thetas):
         print(f"Theta {i} ({column_names[i]}): {theta[0]}")
