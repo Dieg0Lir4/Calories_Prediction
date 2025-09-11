@@ -5,7 +5,9 @@ import pandas as pd
 import algorithms.gradient_descent as gd
 import transform.cleaning as cln
 import visualization.graphs as graphs
+import objetos.objetos as classes
 from sklearn.model_selection import train_test_split
+
 
 def LoadData(file_path : str):
     """
@@ -57,7 +59,7 @@ def PrepareEnviorments(df: pd.DataFrame):
     df (pd.DataFrame): The input DataFrame to split.
 
     Returns:
-    tuple: Split data into training, validation, and test sets.
+    DataSplits: Split data into training, validation, and test sets.
     """
     X = df[["Age", "Duration", "Heart_Rate", "Body_Temp"]]
     y = df["Calories"]
@@ -69,11 +71,18 @@ def PrepareEnviorments(df: pd.DataFrame):
     X_val = (X_val - X_val.mean()) / X_val.std()
     X_test = (X_test - X_test.mean()) / X_test.std()
 
-    return X_train.to_numpy(), X_val.to_numpy(), X_test.to_numpy(), y_train.to_numpy().reshape(-1,1), y_val.to_numpy().reshape(-1,1), y_test.to_numpy().reshape(-1,1)
+    data_splits = classes.DataSplits(X_train.to_numpy(),
+                                     X_val.to_numpy(),
+                                     X_test.to_numpy(),
+                                     y_train.to_numpy().reshape(-1,1),
+                                     y_val.to_numpy().reshape(-1,1),
+                                     y_test.to_numpy().reshape(-1,1))
+    
+    return data_splits
 
 def PredictSet(X_val: np.ndarray, y_val: np.ndarray, thetas: np.ndarray, bias: float, set_name: str):
     """
-    Make predictions on the validation set and give
+    Make predictions on the set and give
     the information about the predictions.
 
     Parameters:
@@ -140,18 +149,24 @@ if __name__ == "__main__":
     X = df[["Age", "Duration", "Heart_Rate", "Body_Temp"]]
     y = df["Calories"]
 
-    X_train, X_val, X_test, y_train, y_val, y_test = PrepareEnviorments(df)
+    data_splits = PrepareEnviorments(df)
 
     thetas = np.array([1, 1, 1, 1]).reshape(-1,1)
     bias = 1
     learning_rate = 0.1
     iterations = 10000
+    min_cost_decrease = 0.0001
+    
+    params = classes.Params(thetas, bias)
+    cost_history = classes.CostHistory([], [], [])
+    hyper_parms = classes.HyperParams(learning_rate, iterations, min_cost_decrease)
 
-    thetas, bias, cost_history_train, cost_history_test = gd.GradientDescent(X_train, y_train, thetas, bias, learning_rate, iterations, X_test, y_test)
+    params, cost_history = gd.GradientDescent(data_splits, params, hyper_parms)
 
-    PredictSet(X_train, y_train, thetas, bias, "Training")
-    PredictSet(X_val, y_val, thetas, bias, "Validation")
-    PredictSet(X_test, y_test, thetas, bias, "Test")
+    PredictSet(data_splits.X_train, data_splits.y_train, params.thetas, params.bias, "Training")
+    PredictSet(data_splits.X_val, data_splits.y_val, thetas, bias, "Validation")
+    PredictSet(data_splits.X_test, data_splits.y_test, thetas, bias, "Test")
     ShowParameters(thetas, bias)
-
-    VisualizeTraining(cost_history_train, cost_history_test)
+    
+    VisualizeTraining(cost_history.cost_history_train, cost_history.cost_history_val)
+    VisualizeTraining(cost_history.cost_history_train, cost_history.cost_history_test)

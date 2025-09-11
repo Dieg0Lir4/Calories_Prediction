@@ -1,4 +1,5 @@
 import numpy as np
+import objetos.objetos as classes
 
 def Hypothesis(X: np.ndarray, thetas: np.ndarray, bias: float):
     """
@@ -63,7 +64,7 @@ def UpdateParameters(X: np.ndarray, y: np.ndarray, thetas: np.ndarray, bias: flo
     return thetas, bias
 
 
-def GradientDescent(X: np.ndarray, y: np.ndarray, thetas: np.ndarray, bias: float, learning_rate: float, iterations: int, X_test: np.ndarray, y_test: np.ndarray):
+def GradientDescent(data_split: classes, params: classes , hyper_parms: classes):
     """
     Perform gradient descent to optimize model parameters.
     
@@ -75,21 +76,28 @@ def GradientDescent(X: np.ndarray, y: np.ndarray, thetas: np.ndarray, bias: floa
     iterations (int): Number of iterations for gradient descent.
     
     Returns:
-    tuple: Optimized model parameters and bias.
+    tuple: Params and CostHistory.
     """
     last_cost = float("inf")
-    cost_history_train = []
-    cost_history_test = []
+    cost_hitsory_train = []
+    cost_hitsory_test = []
+    cost_hitsory_valid = []
+    
+    thetas = params.thetas
+    bias = params.bias
 
-    for _ in range(iterations):
-        thetas, bias = UpdateParameters(X, y, thetas, bias, learning_rate)
-        cost = MinSquareError(X, y, thetas, bias)
-        cost_history_train.append(cost)
-        cost_history_test.append(MinSquareError(X_test, y_test, thetas, bias))
+    for _ in range(hyper_parms.iterations):
+        thetas, bias = UpdateParameters(data_split.X_train, data_split.y_train, thetas, bias, hyper_parms.learning_rate)
+        cost = MinSquareError(data_split.X_train, data_split.y_train, thetas, bias)
+        cost_hitsory_train.append(cost)
+        cost_hitsory_test.append(MinSquareError(data_split.X_test, data_split.y_test, thetas, bias))
+        cost_hitsory_valid.append(MinSquareError(data_split.X_val, data_split.y_val, thetas, bias))
         print("Iteration:", _)
-        if abs(last_cost - cost) < 0.0001:
+        if abs(last_cost - cost) < hyper_parms.min_cost_decrease: #0.0001
             break
         last_cost = cost
 
-    return thetas, bias, cost_history_train, cost_history_test
+    params = classes.Params(thetas, bias)
+    cost_history = classes.CostHistory(cost_hitsory_train, cost_hitsory_valid, cost_hitsory_test)
+    return params, cost_history
 
