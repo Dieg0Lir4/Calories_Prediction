@@ -93,7 +93,7 @@ def GradientDescent(data_split: classes, params: classes , hyper_parms: classes)
         cost_hitsory_test.append(MinSquareError(data_split.X_test, data_split.y_test, thetas, bias))
         cost_hitsory_valid.append(MinSquareError(data_split.X_val, data_split.y_val, thetas, bias))
         print("Iteration:", _)
-        if abs(last_cost - cost) < hyper_parms.min_cost_decrease: #0.0001
+        if abs(last_cost - cost) < hyper_parms.min_cost_decrease:
             break
         last_cost = cost
 

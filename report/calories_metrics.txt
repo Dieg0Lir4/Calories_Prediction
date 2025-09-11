@@ -1,0 +1,29 @@
+=== Model Parameters ===
+Theta 0 (Age): 7.586044
+Theta 1 (Duration): 48.397275
+Theta 2 (Heart_Rate): 15.655139
+Theta 3 (Body_Temp): -11.572227
+Bias: 74.675499
+
+=== Training ===
+RMSE: 9.5859
+MAE:  6.9493
+R²:   0.9680
+
+=== Validation ===
+RMSE: 9.8294
+MAE:  7.1409
+R²:   0.9661
+
+=== Test ===
+RMSE: 10.5106
+MAE:  7.6351
+R²:   0.9628
+
+=== Model Parameters ===
+Theta 0 (Age): 7.586044
+Theta 1 (Duration): 48.397275
+Theta 2 (Heart_Rate): 15.655139
+Theta 3 (Body_Temp): -11.572227
+Bias: 74.675499
+

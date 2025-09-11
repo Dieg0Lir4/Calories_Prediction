@@ -1,7 +1,7 @@
 class Params:
     def __init__(self, thetas, bias):
         self.thetas = thetas
-        self.bias = bias
+        self.bias = float(bias)
         
 class CostHistory:
     def __init__(self, cost_history_train, cost_history_val ,cost_history_test):
