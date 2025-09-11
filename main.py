@@ -23,23 +23,6 @@ def LoadData(file_path : str):
     data = pd.read_csv(file_path)
     return data
 
-def CleanData(df : pd.DataFrame):
-    """
-    Clean the data by using specific techniques depending on the column.
-    
-    Parameters:
-    df (pd.DataFrame): The input DataFrame to be cleaned.
-    
-    Returns:
-    pd.DataFrame: Cleaned DataFrame.
-    """
-    df = cln.EraseOutliersByZScore(df, "Height", 3.0)
-    df = cln.EraseOutliersByIQR(df, "Weight", 1.5)
-    df = cln.EraseOutliersByTemperature(df, 40.7)
-    df = cln.BinaryMap(df, "Gender", "female", "male")
-
-    return df
-
 
 def PrepareEnviorments(df: pd.DataFrame):
     """
@@ -112,14 +95,14 @@ def ShowParameters(thetas: np.ndarray, bias: float,):
     column_names = ["Age", "Duration", "Heart_Rate", "Body_Temp"]
     
     output_file = "report/calories_metrics.txt"
-    with open(output_file, "a") as f:
+    with open(output_file, "w") as f:
         f.write("=== Model Parameters ===\n")
         for i, theta in enumerate(thetas):
             f.write(f"Theta {i} ({column_names[i]}): {theta[0]:.6f}\n")
         f.write(f"Bias: {bias:.6f}\n\n")
         
 
-def VisualizeTraining(cost_history_a: list, cost_history_b: list, plot_name: str):
+def VisualizeTraining(cost_history_a: list, cost_history_b: list, plot_name: str, set_1:str="Training", set_2:str="Test"):
     """
     Visualize the cost reduction over iterations.
 
@@ -131,12 +114,12 @@ def VisualizeTraining(cost_history_a: list, cost_history_b: list, plot_name: str
     sns.set_theme(style="whitegrid", context="notebook")
 
     plt.figure(figsize=(8, 5))
-    plt.plot(cost_history_a, label="Training Cost", linewidth=2)
-    plt.plot(cost_history_b, label="Test Cost", linewidth=2, color="orange")
+    plt.plot(cost_history_a, label=f"{set_1} Cost", linewidth=2)
+    plt.plot(cost_history_b, label=f"{set_2} Cost", linewidth=2, color="orange")
 
     plt.xlabel("Iterations")
     plt.ylabel("Cost")
-    plt.title(f"Cost Reduction Over Iterations • {plot_name}")
+    plt.title(f"Cost Reduction Over Iterations - {plot_name}")
     plt.legend()
     plt.tight_layout()
 
@@ -148,8 +131,15 @@ def VisualizeTraining(cost_history_a: list, cost_history_b: list, plot_name: str
 
 if __name__ == "__main__":
     
+    #=====CALORIES DATASET=====#
+    """
     df = LoadData("data/calories.csv")
-    df = CleanData(df)
+
+    
+    df = cln.EraseOutliersByZScore(df, "Height", 3.0)
+    df = cln.EraseOutliersByIQR(df, "Weight", 1.5)
+    df = cln.EraseOutliersByTemperature(df, 40.7)
+    df = cln.BinaryMap(df, "Gender", "female", "male")
 
     X = df[["Age", "Duration", "Heart_Rate", "Body_Temp"]]
     y = df["Calories"]
@@ -168,10 +158,31 @@ if __name__ == "__main__":
 
     params, cost_history = gd.GradientDescent(data_splits, params, hyper_parms)
 
+    ShowParameters(params.thetas, params.bias)
     PredictSet(data_splits.X_train, data_splits.y_train, params.thetas, params.bias, "Training")
     PredictSet(data_splits.X_val, data_splits.y_val, params.thetas, params.bias, "Validation")
     PredictSet(data_splits.X_test, data_splits.y_test, params.thetas, params.bias, "Test")
-    ShowParameters(params.thetas, params.bias)
     
-    VisualizeTraining(cost_history.cost_history_train, cost_history.cost_history_val, "Training vs Validation")
+    VisualizeTraining(cost_history.cost_history_train, cost_history.cost_history_val, "Training vs Validation", "Training", "Validation")
     VisualizeTraining(cost_history.cost_history_train, cost_history.cost_history_test, "Training vs Test")
+    """
+    
+    #=====RAW STEAM DATASET=====#
+    
+    df = LoadData("data/steam.csv")
+    
+    df = df.dropna()
+    owners_split = df["owners"].str.split("-", expand=True).astype(int)
+    df["owners"] = ((owners_split[0] + owners_split[1]) // 2)
+    
+    df = cln.GetDummiesUsingSemicolon(df, "platforms")
+    
+    df["positive_ratio"] = df["positive_ratings"] / (df["positive_ratings"] + df["negative_ratings"])
+    
+    dummies_list = ["categories", "genres", "steamspy_tags"]
+    df = cln.GetTopDummiesCorrelation(df, dummies_list, "positive_ratio", top_n=5, colineal_threshold=0.5)
+    
+
+    #=====RANDOM FOREST REGRESSOR=====#
+    
+    #=====TRANSFORMED STEAM DATASET=====#
