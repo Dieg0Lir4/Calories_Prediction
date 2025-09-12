@@ -1,68 +1,79 @@
 === Model Parameters ===
-Theta 0 (Age): 8.878636
-Theta 1 (Body_Temp): 51.194329
-Theta 2 (Height): 0.831537
-Bias: 88.931278
+Theta 0 (Age): 8.880734
+Theta 1 (Body_Temp): 51.229325
+Theta 2 (Height): 0.830740
+Bias: 88.993212
 
 === Training ===
-RMSE: 34.0575
-MAE:  27.3618
+RMSE: 34.0573
+MAE:  27.3693
 R²:   0.7010
 
 === Validation ===
-RMSE: 34.8457
-MAE:  27.8368
+RMSE: 34.8429
+MAE:  27.8438
 R²:   0.6891
 
 === Test ===
-RMSE: 34.0076
-MAE:  27.1628
-R²:   0.7101
+RMSE: 34.0028
+MAE:  27.1685
+R²:   0.7102
 
 === Random Forest Regressor ===
-RMSE: 26.7158
-MAE:  19.0146
-R²:   0.8211
+--- Validation Set ---
+RMSE: 16.9414
+MAE:  12.6006
+R²:   0.9265
 
-Parámetros del modelo:
- - bootstrap: True
- - ccp_alpha: 0.0
- - criterion: squared_error
- - max_depth: 100
- - max_features: 1.0
- - max_leaf_nodes: None
- - max_samples: None
- - min_impurity_decrease: 0.0
- - min_samples_leaf: 10
- - min_samples_split: 15
- - min_weight_fraction_leaf: 0.0
- - monotonic_cst: None
- - n_estimators: 500
- - n_jobs: -2
- - oob_score: False
- - random_state: 42
- - verbose: 0
- - warm_start: False
+--- Test Set ---
+RMSE: 17.2816
+MAE:  12.5367
+R²:   0.9251
+
+Feature Importances:
+User_ID: 0.0000
+Age: 0.0188
+Height: 0.0001
+Weight: 0.0020
+Heart_Rate: 0.7891
+Body_Temp: 0.1901
 
 === Model Parameters ===
-Theta 0 (Age): 0.148970
-Theta 1 (Body_Temp): 0.914053
-Theta 2 (Height): 0.001305
-Theta 3 (Gender): -0.024750
-Bias: 3.859689
+Theta 0 (Age): 0.128982
+Theta 1 (Body_Temp): 0.912607
+Theta 2 (Height): 0.001393
+Theta 3 (Gender): -0.029523
+Bias: 3.927933
 
 === Training ===
-RMSE: 0.3396
-MAE:  0.2690
-R²:   0.8792
+RMSE: 0.3261
+MAE:  0.2554
+R²:   0.8885
 
 === Validation ===
-RMSE: 0.3367
-MAE:  0.2684
-R²:   0.8811
+RMSE: 87.7177
+MAE:  70.1445
+R²:   -1.6974
 
 === Test ===
-RMSE: 0.3417
-MAE:  0.2715
-R²:   0.8777
+RMSE: 88.0348
+MAE:  69.7272
+R²:   -1.6117
+
+=== Random Forest Regressor Improved ===
+--- Validation Set ---
+RMSE: 15.4709
+MAE:  10.7522
+R²:   0.9161
+
+--- Test Set ---
+RMSE: 15.0866
+MAE:  10.4158
+R²:   0.9233
+
+Feature Importances:
+Heart_Rate: 0.6746
+Age: 0.0590
+Gender: 0.0107
+Body_Temp: 0.2557
 

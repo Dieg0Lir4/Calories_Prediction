@@ -25,7 +25,7 @@ def LoadData(file_path : str):
     return data
 
 
-def PrepareEnviorments(X: pd.DataFrame, y: pd.DataFrame):
+def PrepareEnviorments(X: pd.DataFrame, y: pd.DataFrame, z: bool=True):
     """
     Prepare the environment by splitting the data into training, validation, and test sets.
     And also reshaping the dataframes to fit the code.
@@ -40,9 +40,10 @@ def PrepareEnviorments(X: pd.DataFrame, y: pd.DataFrame):
     X_train, X_rest, y_train, y_rest = train_test_split(X, y, test_size=0.3, random_state=42)
     X_val, X_test, y_val, y_test = train_test_split(X_rest, y_rest, test_size=0.5, random_state=42)
 
-    X_train = (X_train - X_train.mean()) / X_train.std()
-    X_val = (X_val - X_val.mean()) / X_val.std()
-    X_test = (X_test - X_test.mean()) / X_test.std()
+    if z:
+        X_train = (X_train - X_train.mean()) / X_train.std()
+        X_val = (X_val - X_val.mean()) / X_val.std()
+        X_test = (X_test - X_test.mean()) / X_test.std()
 
     data_splits = classes.DataSplits(X_train.to_numpy(),
                                      X_val.to_numpy(),
@@ -145,7 +146,7 @@ if __name__ == "__main__":
     
     thetas = np.ones((len(column_names), 1))
     bias = 1
-    learning_rate = 0.01
+    learning_rate = 0.1
     iterations = 10000
     min_cost_decrease = 0.0001
     
@@ -165,38 +166,51 @@ if __name__ == "__main__":
     
     #=====RANDOM FOREST REGRESSOR=====#
 
-    # Using the same data splits from above
     rf = RandomForestRegressor(
-        n_estimators=500,
-        max_depth=100,             # limita profundidad
-        min_samples_split=15,      # evita ramas muy chicas
-        min_samples_leaf=10,       # evita hojas con 1 dato
-        random_state=42,
-        n_jobs=-2
+        n_estimators=50,      # menos árboles
+        max_depth=5,          # profundidad máxima limitada
+        min_samples_split=20, # obliga a ramas más grandes
+        min_samples_leaf=10,  # hojas con mínimo 10 datos
+        random_state=42
     )
-    rf.fit(data_splits.X_train, data_splits.y_train.ravel())
-    y_pred = rf.predict(data_splits.X_test)
-
-    # Métricas
-    rmse = np.sqrt(np.mean((y_pred - data_splits.y_test.ravel()) ** 2))
-    mae = np.mean(np.abs(y_pred - data_splits.y_test.ravel()))
-    r2 = 1 - (np.sum((y_pred - data_splits.y_test.ravel()) ** 2) /
-              np.sum((data_splits.y_test.ravel() - data_splits.y_test.ravel().mean()) ** 2))
-
-    # Guardar en archivo
+    
+    X = df.drop(columns=["Calories", "Gender", "Duration"])
+    y = df["Calories"]
+    
+    data_splits_rf = PrepareEnviorments(X, y, False)
+    
+    rf.fit(data_splits_rf.X_train, data_splits_rf.y_train.ravel())
+    y_pred_val = rf.predict(data_splits_rf.X_val)
+    y_pred_test = rf.predict(data_splits_rf.X_test)
+    
+    rmse_val = np.sqrt(np.mean((y_pred_val - data_splits_rf.y_val.ravel()) ** 2))
+    mae_val = np.mean(np.abs(y_pred_val - data_splits_rf.y_val.ravel()))
+    r2_val = rf.score(data_splits_rf.X_val, data_splits_rf.y_val.ravel())
+    
+    rmse_test = np.sqrt(np.mean((y_pred_test - data_splits_rf.y_test.ravel()) ** 2))
+    mae_test = np.mean(np.abs(y_pred_test - data_splits_rf.y_test.ravel()))
+    r2_test = rf.score(data_splits_rf.X_test, data_splits_rf.y_test.ravel())
+    
+    feature_importances = rf.feature_importances_
+    
     output_file = f"report/calories_metrics.txt"
     with open(output_file, "a") as f:
         f.write(f"=== Random Forest Regressor ===\n")
-        f.write(f"RMSE: {rmse:.4f}\n")
-        f.write(f"MAE:  {mae:.4f}\n")
-        f.write(f"R²:   {r2:.4f}\n")
-        f.write("\nParámetros del modelo:\n")
-        for param, value in rf.get_params().items():
-            f.write(f" - {param}: {value}\n")
+        f.write(f"--- Validation Set ---\n")
+        f.write(f"RMSE: {rmse_val:.4f}\n")
+        f.write(f"MAE:  {mae_val:.4f}\n")
+        f.write(f"R²:   {r2_val:.4f}\n\n")
+        f.write(f"--- Test Set ---\n")
+        f.write(f"RMSE: {rmse_test:.4f}\n")
+        f.write(f"MAE:  {mae_test:.4f}\n")
+        f.write(f"R²:   {r2_test:.4f}\n\n")
+        f.write("Feature Importances:\n")
+        for name, importance in zip(X.columns, feature_importances):
+            f.write(f"{name}: {importance:.4f}\n")
         f.write("\n")
     
 
-    #=====IMPROVE CALORIES DATASET=====#"""
+    #=====IMPROVE CALORIES DATASET=====#
 
     
     df = cln.EraseOutliersByZScore(df, "Height", 3.0)
@@ -211,12 +225,12 @@ if __name__ == "__main__":
     y = df["Calories_ln"]
 
     data_splits = PrepareEnviorments(X, y)
-
-    #Thetas del tamaño de columns_names
+    data_splits.y_val = np.exp(data_splits.y_val)
+    data_splits.y_test = np.exp(data_splits.y_test)
     
     thetas = np.ones((len(column_names), 1))
     bias = 1
-    learning_rate = 0.01
+    learning_rate = 0.1
     iterations = 10000
     min_cost_decrease = 0.0001
     
@@ -225,6 +239,11 @@ if __name__ == "__main__":
     hyper_parms = classes.HyperParams(learning_rate, iterations, min_cost_decrease)
 
     params, cost_history = gd.GradientDescent(data_splits, params, hyper_parms)
+    
+    
+    
+    
+    
 
     ShowParameters(params.thetas, params.bias, "calories", column_names, "a")
     PredictSet(data_splits.X_train, data_splits.y_train, params.thetas, params.bias, "Training", "calories")
@@ -233,3 +252,48 @@ if __name__ == "__main__":
     
     VisualizeTraining(cost_history.cost_history_train, cost_history.cost_history_val, "Training vs Validation Improved", "Training", "Validation")
     VisualizeTraining(cost_history.cost_history_train, cost_history.cost_history_test, "Training vs Test Improved")
+    
+    
+    #=====RANDOM FOREST REGRESSOR IMPROVED=====#
+    
+    top_features = ["Heart_Rate", "Age", "Gender","Body_Temp"]
+    X = df[top_features]
+    y = df["Calories"]
+    
+    rf = RandomForestRegressor(
+        n_estimators=800,    # muchos árboles para estabilidad
+        max_depth=None,      # sin límite, que cada árbol crezca
+        min_samples_split=2, # splits muy pequeños permitidos
+        min_samples_leaf=1,  # hojas con 1 dato (máxima fineza)
+        random_state=42,
+        n_jobs=-1
+    )
+    
+    data_splits_rf = PrepareEnviorments(X, y, False)
+    rf.fit(data_splits_rf.X_train, data_splits_rf.y_train.ravel())
+    y_pred_val = rf.predict(data_splits_rf.X_val)
+    y_pred_test = rf.predict(data_splits_rf.X_test)
+    rmse_val = np.sqrt(np.mean((y_pred_val - data_splits_rf.y_val.ravel()) ** 2))
+    mae_val = np.mean(np.abs(y_pred_val - data_splits_rf.y_val.ravel()))
+    r2_val = rf.score(data_splits_rf.X_val, data_splits_rf.y_val.ravel())
+    rmse_test = np.sqrt(np.mean((y_pred_test - data_splits_rf.y_test.ravel()) ** 2))
+    mae_test = np.mean(np.abs(y_pred_test - data_splits_rf.y_test.ravel()))
+    r2_test = rf.score(data_splits_rf.X_test, data_splits_rf.y_test.ravel())
+    feature_importances = rf.feature_importances_
+    
+    output_file = f"report/calories_metrics.txt"
+    with open(output_file, "a") as f:
+        f.write(f"=== Random Forest Regressor Improved ===\n")
+        f.write(f"--- Validation Set ---\n")
+        f.write(f"RMSE: {rmse_val:.4f}\n")
+        f.write(f"MAE:  {mae_val:.4f}\n")
+        f.write(f"R²:   {r2_val:.4f}\n\n")
+        f.write(f"--- Test Set ---\n")
+        f.write(f"RMSE: {rmse_test:.4f}\n")
+        f.write(f"MAE:  {mae_test:.4f}\n")
+        f.write(f"R²:   {r2_test:.4f}\n\n")
+        f.write("Feature Importances:\n")
+        for name, importance in zip(X.columns, feature_importances):
+            f.write(f"{name}: {importance:.4f}\n")
+        f.write("\n")
+        f.close()
