@@ -90,6 +90,7 @@ def GetTopDummiesCorrelation(df: pd.DataFrame, columns: list, target: str, top_n
     colineal_threshold (float): Threshold to determine colinearity between columns.
     Returns:
     pd.DataFrame: DataFrame with selected top N correlated columns added.
+    list: List of selected column names.
     """
     
     
@@ -107,11 +108,11 @@ def GetTopDummiesCorrelation(df: pd.DataFrame, columns: list, target: str, top_n
     correlations = correlations[correlations.index != target]
     
 
-    top_correlations = correlations.sort_values(ascending=False).head(top_n)
+    correlations = correlations.sort_values(ascending=False)
     
 
     selected_columns = []
-    for col in top_correlations.index:
+    for col in correlations.index:
         es_colineal = False
         for sel_col in selected_columns:
             if abs(df_dummies[col].corr(df_dummies[sel_col])) > colineal_threshold:
@@ -123,6 +124,5 @@ def GetTopDummiesCorrelation(df: pd.DataFrame, columns: list, target: str, top_n
             break
     
     df = pd.concat([df, df_dummies[selected_columns]], axis=1)
-    print(df_dummies[selected_columns].head())
-    return df
+    return df, selected_columns
     

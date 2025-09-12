@@ -11,12 +11,14 @@ def Hypothesis(X: np.ndarray, thetas: np.ndarray, bias: float):
     
     Returns:
     np.ndarray: Predicted values.
-    """ 
+    
     result = np.zeros((X.shape[0], 1))
     
     for i in range(X.shape[0]):
         for j in range(X.shape[1]):
             result[i,0] += X[i,j] * thetas[j,0]
+    """
+    result = X.dot(thetas)
     
     return result + bias
 
