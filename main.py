@@ -40,9 +40,9 @@ def PrepareEnviorments(X: pd.DataFrame, y: pd.DataFrame):
     X_train, X_rest, y_train, y_rest = train_test_split(X, y, test_size=0.3, random_state=42)
     X_val, X_test, y_val, y_test = train_test_split(X_rest, y_rest, test_size=0.5, random_state=42)
 
-    #X_train = (X_train - X_train.mean()) / X_train.std()
-    #X_val = (X_val - X_val.mean()) / X_val.std()
-    #X_test = (X_test - X_test.mean()) / X_test.std()
+    X_train = (X_train - X_train.mean()) / X_train.std()
+    X_val = (X_val - X_val.mean()) / X_val.std()
+    X_test = (X_test - X_test.mean()) / X_test.std()
 
     data_splits = classes.DataSplits(X_train.to_numpy(),
                                      X_val.to_numpy(),
@@ -81,7 +81,7 @@ def PredictSet(X_val: np.ndarray, y_val: np.ndarray, thetas: np.ndarray, bias: f
         f.write(f"R²:   {r2:.4f}\n\n")
 
 
-def ShowParameters(thetas: np.ndarray, bias: float, data_name: str="calories", column_names: list=["Age", "Duration", "Heart_Rate", "Body_Temp"]):
+def ShowParameters(thetas: np.ndarray, bias: float, data_name: str="calories", column_names: list=["Age", "Duration", "Heart_Rate"], method: str="w"):
     """
     Save the model parameters and bias in a txt file.
     
@@ -92,7 +92,7 @@ def ShowParameters(thetas: np.ndarray, bias: float, data_name: str="calories", c
     
     
     output_file = f"report/{data_name}_metrics.txt"
-    with open(output_file, "w") as f:
+    with open(output_file, method) as f:
         f.write("=== Model Parameters ===\n")
         for i, theta in enumerate(thetas):
             f.write(f"Theta {i} ({column_names[i]}): {theta[0]:.6f}\n")
@@ -133,19 +133,19 @@ if __name__ == "__main__":
     df = LoadData("data/calories.csv")
 
     
-    df = cln.EraseOutliersByZScore(df, "Height", 3.0)
-    df = cln.EraseOutliersByIQR(df, "Weight", 1.5)
-    df = cln.EraseOutliersByTemperature(df, 40.7)
-    df = cln.BinaryMap(df, "Gender", "female", "male")
+    
 
-    X = df[["Age", "Duration", "Heart_Rate", "Body_Temp"]]
+    column_names = ["Age", "Body_Temp", "Height"]
+    X = df[column_names]
     y = df["Calories"]
 
     data_splits = PrepareEnviorments(X, y)
 
-    thetas = np.array([1, 1, 1, 1]).reshape(-1,1)
+    #Thetas del tamaño de columns_names
+    
+    thetas = np.ones((len(column_names), 1))
     bias = 1
-    learning_rate = 0.1
+    learning_rate = 0.01
     iterations = 10000
     min_cost_decrease = 0.0001
     
@@ -155,7 +155,7 @@ if __name__ == "__main__":
 
     params, cost_history = gd.GradientDescent(data_splits, params, hyper_parms)
 
-    ShowParameters(params.thetas, params.bias)
+    ShowParameters(params.thetas, params.bias, "calories", column_names)
     PredictSet(data_splits.X_train, data_splits.y_train, params.thetas, params.bias, "Training", "calories")
     PredictSet(data_splits.X_val, data_splits.y_val, params.thetas, params.bias, "Validation", "calories")
     PredictSet(data_splits.X_test, data_splits.y_test, params.thetas, params.bias, "Test", "calories")
@@ -195,52 +195,41 @@ if __name__ == "__main__":
             f.write(f" - {param}: {value}\n")
         f.write("\n")
     
-    #=====RAW STEAM DATASET=====#
-    """_summary_
-    df = LoadData("data/steam.csv")
+
+    #=====IMPROVE CALORIES DATASET=====#"""
+
     
-    df = df.dropna()
-    owners_split = df["owners"].str.split("-", expand=True).astype(int)
-    df["owners"] = ((owners_split[0] + owners_split[1]) // 2)
+    df = cln.EraseOutliersByZScore(df, "Height", 3.0)
+    df = cln.EraseOutliersByIQR(df, "Weight", 1.5)
+    df = cln.EraseOutliersByTemperature(df, 40.7)
+    df = cln.BinaryMap(df, "Gender", "female", "male")
     
-    df = cln.GetDummiesUsingSemicolon(df, "platforms")
+    df["Calories_ln"] = np.log(df["Calories"])
     
-    df["positive_ratio"] = (df["positive_ratings"] / (df["positive_ratings"] + df["negative_ratings"]))*100
-    
-    dummies_list = ["categories", "genres", "steamspy_tags"]
-    columns = []
-    df, columns = cln.GetTopDummiesCorrelation(df, dummies_list, "positive_ratio", top_n=5, colineal_threshold=0.5)
-    
-    total_columns = columns + ["price", "owners", "average_playtime"]
-    
-    X = df[total_columns]
-    y = df["positive_ratio"]
-    
+    column_names = ["Age", "Body_Temp", "Height", "Gender"]
+    X = df[column_names]
+    y = df["Calories_ln"]
+
     data_splits = PrepareEnviorments(X, y)
+
+    #Thetas del tamaño de columns_names
     
-    print(data_splits.X_train.shape)
-    thetas = np.array([1] * data_splits.X_train.shape[1]).reshape(-1,1)
-    print("thetas shape:", thetas.shape)
+    thetas = np.ones((len(column_names), 1))
     bias = 1
     learning_rate = 0.01
-    iterations = 10
+    iterations = 10000
     min_cost_decrease = 0.0001
     
     params = classes.Params(thetas, bias)
     cost_history = classes.CostHistory([], [], [])
     hyper_parms = classes.HyperParams(learning_rate, iterations, min_cost_decrease)
+
     params, cost_history = gd.GradientDescent(data_splits, params, hyper_parms)
-    
-    ShowParameters(params.thetas, params.bias, "raw_steam", total_columns)
-    PredictSet(data_splits.X_train, data_splits.y_train, params.thetas, params.bias, "Training", "raw_steam")
-    PredictSet(data_splits.X_val, data_splits.y_val, params.thetas, params.bias, "Validation", "raw_steam")
-    PredictSet(data_splits.X_test, data_splits.y_test, params.thetas, params.bias, "Test", "raw_steam")
-    VisualizeTraining(cost_history.cost_history_train, cost_history.cost_history_val, "Training vs Validation Raw Steam", "Training", "Validation")
-    VisualizeTraining(cost_history.cost_history_train, cost_history.cost_history_test, "Training vs Test Raw Steam", "Training", "Test")
-    """
-    
 
-
+    ShowParameters(params.thetas, params.bias, "calories", column_names, "a")
+    PredictSet(data_splits.X_train, data_splits.y_train, params.thetas, params.bias, "Training", "calories")
+    PredictSet(data_splits.X_val, data_splits.y_val, params.thetas, params.bias, "Validation", "calories")
+    PredictSet(data_splits.X_test, data_splits.y_test, params.thetas, params.bias, "Test", "calories")
     
-
-    
+    VisualizeTraining(cost_history.cost_history_train, cost_history.cost_history_val, "Training vs Validation Improved", "Training", "Validation")
+    VisualizeTraining(cost_history.cost_history_train, cost_history.cost_history_test, "Training vs Test Improved")

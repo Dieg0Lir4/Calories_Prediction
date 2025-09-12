@@ -1,29 +1,28 @@
 === Model Parameters ===
-Theta 0 (Age): 7.586044
-Theta 1 (Duration): 48.397275
-Theta 2 (Heart_Rate): 15.655139
-Theta 3 (Body_Temp): -11.572227
-Bias: 74.675499
+Theta 0 (Age): 8.878636
+Theta 1 (Body_Temp): 51.194329
+Theta 2 (Height): 0.831537
+Bias: 88.931278
 
 === Training ===
-RMSE: 9.5859
-MAE:  6.9493
-R²:   0.9680
+RMSE: 34.0575
+MAE:  27.3618
+R²:   0.7010
 
 === Validation ===
-RMSE: 9.8294
-MAE:  7.1409
-R²:   0.9661
+RMSE: 34.8457
+MAE:  27.8368
+R²:   0.6891
 
 === Test ===
-RMSE: 10.5106
-MAE:  7.6351
-R²:   0.9628
+RMSE: 34.0076
+MAE:  27.1628
+R²:   0.7101
 
 === Random Forest Regressor ===
-RMSE: 6.8277
-MAE:  4.4475
-R²:   0.9843
+RMSE: 26.7158
+MAE:  19.0146
+R²:   0.8211
 
 Parámetros del modelo:
  - bootstrap: True
@@ -44,4 +43,26 @@ Parámetros del modelo:
  - random_state: 42
  - verbose: 0
  - warm_start: False
+
+=== Model Parameters ===
+Theta 0 (Age): 0.148970
+Theta 1 (Body_Temp): 0.914053
+Theta 2 (Height): 0.001305
+Theta 3 (Gender): -0.024750
+Bias: 3.859689
+
+=== Training ===
+RMSE: 0.3396
+MAE:  0.2690
+R²:   0.8792
+
+=== Validation ===
+RMSE: 0.3367
+MAE:  0.2684
+R²:   0.8811
+
+=== Test ===
+RMSE: 0.3417
+MAE:  0.2715
+R²:   0.8777
 
