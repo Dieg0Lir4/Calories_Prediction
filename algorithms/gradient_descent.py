@@ -11,18 +11,17 @@ def Hypothesis(X: np.ndarray, thetas: np.ndarray, bias: float):
     
     Returns:
     np.ndarray: Predicted values.
-    
+    """
     result = np.zeros((X.shape[0], 1))
     
     for i in range(X.shape[0]):
         for j in range(X.shape[1]):
             result[i,0] += X[i,j] * thetas[j,0]
-    """
-    result = X.dot(thetas)
+ 
     
     return result + bias
 
-def MinSquareError(X: np.ndarray, y: np.ndarray, thetas: np.ndarray, bias: float):
+def MinSquareError(X: np.ndarray, y: np.ndarray, thetas: np.ndarray, bias: float, log: bool = False):
     """
     Calculate the Mean Squared Error (MSE) cost function.
     
@@ -36,6 +35,8 @@ def MinSquareError(X: np.ndarray, y: np.ndarray, thetas: np.ndarray, bias: float
     """
     m = y.shape[0]
     predictions = Hypothesis(X, thetas, bias)
+    if log:
+        predictions = np.exp(predictions)
     cost = (1/(2*m)) * np.sum((predictions - y) ** 2)
     return cost
 
@@ -66,7 +67,7 @@ def UpdateParameters(X: np.ndarray, y: np.ndarray, thetas: np.ndarray, bias: flo
     return thetas, bias
 
 
-def GradientDescent(data_split: classes, params: classes , hyper_parms: classes):
+def GradientDescent(data_split: classes, params: classes , hyper_parms: classes, log: bool = False):
     """
     Perform gradient descent to optimize model parameters.
     
@@ -90,10 +91,14 @@ def GradientDescent(data_split: classes, params: classes , hyper_parms: classes)
 
     for _ in range(hyper_parms.iterations):
         thetas, bias = UpdateParameters(data_split.X_train, data_split.y_train, thetas, bias, hyper_parms.learning_rate)
-        cost = MinSquareError(data_split.X_train, data_split.y_train, thetas, bias)
-        cost_hitsory_train.append(cost)
-        cost_hitsory_test.append(MinSquareError(data_split.X_test, data_split.y_test, thetas, bias))
-        cost_hitsory_valid.append(MinSquareError(data_split.X_val, data_split.y_val, thetas, bias))
+        if log:
+            cost = MinSquareError(data_split.X_train, np.exp(data_split.y_train), thetas, bias, log)
+            cost_hitsory_train.append(cost)
+        else:
+            cost = MinSquareError(data_split.X_train, data_split.y_train, thetas, bias)
+            cost_hitsory_train.append(cost)
+        cost_hitsory_test.append(MinSquareError(data_split.X_test, data_split.y_test, thetas, bias, log))
+        cost_hitsory_valid.append(MinSquareError(data_split.X_val, data_split.y_val, thetas, bias, log))
         print("Iteration:", _)
         if abs(last_cost - cost) < hyper_parms.min_cost_decrease:
             break

@@ -1,79 +1,100 @@
 === Model Parameters ===
-Theta 0 (Age): 8.880734
-Theta 1 (Body_Temp): 51.229325
-Theta 2 (Height): 0.830740
-Bias: 88.993212
+Theta 0 (Age): 8.870443
+Theta 1 (Body_Temp): 51.087450
+Theta 2 (Height): 0.833672
+Bias: 88.742329
 
 === Training ===
-RMSE: 34.0573
-MAE:  27.3693
-RÂ²:   0.7010
+RMSE: 34.0588
+MAE:  27.3394
+R²:   0.7010
 
 === Validation ===
-RMSE: 34.8429
-MAE:  27.8438
-RÂ²:   0.6891
+RMSE: 34.8552
+MAE:  27.8153
+R²:   0.6889
 
 === Test ===
-RMSE: 34.0028
-MAE:  27.1685
-RÂ²:   0.7102
+RMSE: 34.0229
+MAE:  27.1460
+R²:   0.7099
 
-=== Random Forest Regressor ===
+=== Decision Tree Regressor ===
+--- Training Set ---
+RMSE: 7.6400
+MAE:  2.2182
+R²:   0.9850
+
 --- Validation Set ---
-RMSE: 16.9414
-MAE:  12.6006
-RÂ²:   0.9265
+RMSE: 37.8690
+MAE:  26.7681
+R²:   0.6328
 
 --- Test Set ---
-RMSE: 17.2816
-MAE:  12.5367
-RÂ²:   0.9251
-
-Feature Importances:
-User_ID: 0.0000
-Age: 0.0188
-Height: 0.0001
-Weight: 0.0020
-Heart_Rate: 0.7891
-Body_Temp: 0.1901
+RMSE: 37.7434
+MAE:  26.8414
+R²:   0.6429
 
 === Model Parameters ===
-Theta 0 (Age): 0.128982
-Theta 1 (Body_Temp): 0.912607
-Theta 2 (Height): 0.001393
-Theta 3 (Gender): -0.029523
-Bias: 3.927933
+Theta 0 (Age): 0.121555
+Theta 1 (Body_Temp): 0.912179
+Theta 2 (Height): 0.005788
+Theta 3 (Gender): -0.034236
+Bias: 3.953276
 
 === Training ===
-RMSE: 0.3261
-MAE:  0.2554
-RÂ²:   0.8885
+RMSE: 25.6533
+MAE:  17.3398
+R²:   0.7711
 
 === Validation ===
-RMSE: 87.7177
-MAE:  70.1445
-RÂ²:   -1.6974
+RMSE: 25.7839
+MAE:  17.5284
+R²:   0.7669
 
 === Test ===
-RMSE: 88.0348
-MAE:  69.7272
-RÂ²:   -1.6117
+RMSE: 26.1088
+MAE:  17.6485
+R²:   0.7703
 
-=== Random Forest Regressor Improved ===
+=== Random Forest Regressor ===
+--- Training Set ---
+RMSE: 7.2558
+MAE:  4.4469
+R²:   0.9817
+
 --- Validation Set ---
-RMSE: 15.4709
-MAE:  10.7522
-RÂ²:   0.9161
+RMSE: 15.4698
+MAE:  10.9156
+R²:   0.9161
 
 --- Test Set ---
-RMSE: 15.0866
-MAE:  10.4158
-RÂ²:   0.9233
+RMSE: 15.3377
+MAE:  10.7672
+R²:   0.9207
 
 Feature Importances:
-Heart_Rate: 0.6746
-Age: 0.0590
-Gender: 0.0107
-Body_Temp: 0.2557
+User_ID: 0.0167
+Gender: 0.0043
+Age: 0.0368
+Height: 0.0124
+Weight: 0.0153
+Heart_Rate: 0.6366
+Body_Temp: 0.2778
+
+=== Random Forest Regressor Improved ===
+--- Training Set ---
+RMSE: 15.1519
+MAE:  10.9023
+R²:   0.9202
+
+--- Validation Set ---
+RMSE: 16.1614
+MAE:  11.6035
+R²:   0.9084
+
+--- Test Set ---
+RMSE: 16.1286
+MAE:  11.3493
+R²:   0.9123
 
