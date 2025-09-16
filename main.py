@@ -136,6 +136,11 @@ if __name__ == "__main__":
     #=====CALORIES DATASET=====#
     
     df = LoadData("data/calories.csv")
+    
+    df = cln.EraseOutliersByZScore(df, "Height", 3.0)
+    df = cln.EraseOutliersByIQR(df, "Weight", 1.5)
+    df = cln.EraseOutliersByTemperature(df, 40.7)
+    df = cln.BinaryMap(df, "Gender", "female", "male")
 
     column_names = ["Age", "Body_Temp", "Height"]
     X = df[column_names]
@@ -143,8 +148,6 @@ if __name__ == "__main__":
 
     data_splits = PrepareEnviorments(X, y)
 
-    #Thetas del tamaño de columns_names
-    
     thetas = np.ones((len(column_names), 1))
     bias = 1
     learning_rate = 0.001
@@ -163,12 +166,13 @@ if __name__ == "__main__":
     PredictSet(data_splits.X_test, data_splits.y_test, params.thetas, params.bias, "Test", "calories")
     
     VisualizeTraining(cost_history.cost_history_train, cost_history.cost_history_val, "Training vs Validation", "Training", "Validation")
-    VisualizeTraining(cost_history.cost_history_val, cost_history.cost_history_test, "Validation vs Test")
+    VisualizeTraining(cost_history.cost_history_val, cost_history.cost_history_test, "Validation vs Test", "Validation", "Test")
 
     
 
     #=====DECISION TREE REGRESSOR=====#
 
+    df = LoadData("data/calories.csv")
     X = df.drop(columns=["Calories", "Duration"])
     y = df["Calories"]
 
@@ -208,6 +212,8 @@ if __name__ == "__main__":
 
     #=====IMPROVE CALORIES DATASET=====#
     
+    df = LoadData("data/calories.csv")
+    
     df = cln.EraseOutliersByZScore(df, "Height", 3.0)
     df = cln.EraseOutliersByIQR(df, "Weight", 1.5)
     df = cln.EraseOutliersByTemperature(df, 40.7)
@@ -243,7 +249,7 @@ if __name__ == "__main__":
     PredictSet(data_splits.X_test, data_splits.y_test, params.thetas, params.bias, "Test", "calories", True)
 
     VisualizeTraining(cost_history.cost_history_train, cost_history.cost_history_val, "Training vs Validation Improved", "Training", "Validation")
-    VisualizeTraining(cost_history.cost_history_val, cost_history.cost_history_test, "Validation vs Test Improved")
+    VisualizeTraining(cost_history.cost_history_val, cost_history.cost_history_test, "Validation vs Test Improved", "Validation", "Test")
 
     y_pred_train = data_splits.X_train.dot(params.thetas) + params.bias
     y_pred_val = data_splits.X_val.dot(params.thetas) + params.bias
@@ -255,7 +261,10 @@ if __name__ == "__main__":
 
     #=====RANDOM FOREST REGRESSOR=====#
 
-    X = df.drop(columns=["Calories", "Calories_ln", "Duration"])
+    df = LoadData("data/calories.csv")
+    df = cln.BinaryMap(df, "Gender", "female", "male")
+    
+    X = df.drop(columns=["Calories", "Duration"])
     y = df["Calories"]
 
     data_splits_rf = PrepareEnviorments(X, y, False)
@@ -282,7 +291,6 @@ if __name__ == "__main__":
     mae_test = np.mean(np.abs(y_pred_test - data_splits_rf.y_test.ravel()))
     r2_test = rf.score(data_splits_rf.X_test, data_splits_rf.y_test.ravel())
 
-    #GET top features
     feature_importances = rf.feature_importances_
 
     output_file = f"report/calories_metrics.txt"
@@ -312,10 +320,10 @@ if __name__ == "__main__":
     y = df["Calories"]
     
     rf = RandomForestRegressor(
-        n_estimators=800,    # muchos árboles para estabilidad
-        max_depth=5,      # sin límite, que cada árbol crezca
-        min_samples_split=10, # splits muy pequeños permitidos
-        min_samples_leaf=5,  # hojas con 1 dato (máxima fineza)
+        n_estimators=800,
+        max_depth=5,
+        min_samples_split=10,
+        min_samples_leaf=5,
         random_state=42
     )
 

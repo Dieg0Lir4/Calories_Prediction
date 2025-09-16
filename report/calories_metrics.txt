@@ -1,39 +1,39 @@
 === Model Parameters ===
-Theta 0 (Age): 8.870443
-Theta 1 (Body_Temp): 51.087450
-Theta 2 (Height): 0.833672
-Bias: 88.742329
+Theta 0 (Age): 7.142274
+Theta 1 (Body_Temp): 42.427703
+Theta 2 (Height): 0.007432
+Bias: 74.400813
 
 === Training ===
-RMSE: 34.0588
-MAE:  27.3394
-R²:   0.7010
+RMSE: 31.7411
+MAE:  24.8458
+RÂ²:   0.6496
 
 === Validation ===
-RMSE: 34.8552
-MAE:  27.8153
-R²:   0.6889
+RMSE: 31.6742
+MAE:  24.8674
+RÂ²:   0.6483
 
 === Test ===
-RMSE: 34.0229
-MAE:  27.1460
-R²:   0.7099
+RMSE: 32.9054
+MAE:  25.7356
+RÂ²:   0.6351
 
 === Decision Tree Regressor ===
 --- Training Set ---
-RMSE: 7.6400
-MAE:  2.2182
-R²:   0.9850
+RMSE: 8.0917
+MAE:  2.3976
+RÂ²:   0.9772
 
 --- Validation Set ---
-RMSE: 37.8690
-MAE:  26.7681
-R²:   0.6328
+RMSE: 35.5462
+MAE:  24.6293
+RÂ²:   0.5570
 
 --- Test Set ---
-RMSE: 37.7434
-MAE:  26.8414
-R²:   0.6429
+RMSE: 34.4555
+MAE:  23.5992
+RÂ²:   0.5999
 
 === Model Parameters ===
 Theta 0 (Age): 0.121555
@@ -45,56 +45,56 @@ Bias: 3.953276
 === Training ===
 RMSE: 25.6533
 MAE:  17.3398
-R²:   0.7711
+RÂ²:   0.7711
 
 === Validation ===
 RMSE: 25.7839
 MAE:  17.5284
-R²:   0.7669
+RÂ²:   0.7669
 
 === Test ===
 RMSE: 26.1088
 MAE:  17.6485
-R²:   0.7703
+RÂ²:   0.7703
 
 === Random Forest Regressor ===
 --- Training Set ---
-RMSE: 7.2558
-MAE:  4.4469
-R²:   0.9817
+RMSE: 7.4343
+MAE:  4.7118
+RÂ²:   0.9858
 
 --- Validation Set ---
-RMSE: 15.4698
-MAE:  10.9156
-R²:   0.9161
+RMSE: 15.9191
+MAE:  11.5269
+RÂ²:   0.9351
 
 --- Test Set ---
-RMSE: 15.3377
-MAE:  10.7672
-R²:   0.9207
+RMSE: 15.8043
+MAE:  11.3370
+RÂ²:   0.9374
 
 Feature Importances:
-User_ID: 0.0167
-Gender: 0.0043
-Age: 0.0368
-Height: 0.0124
-Weight: 0.0153
-Heart_Rate: 0.6366
-Body_Temp: 0.2778
+User_ID: 0.0129
+Gender: 0.0064
+Age: 0.0380
+Height: 0.0095
+Weight: 0.0116
+Heart_Rate: 0.7441
+Body_Temp: 0.1774
 
 === Random Forest Regressor Improved ===
 --- Training Set ---
-RMSE: 15.1519
-MAE:  10.9023
-R²:   0.9202
+RMSE: 16.5682
+MAE:  12.0987
+RÂ²:   0.9292
 
 --- Validation Set ---
-RMSE: 16.1614
-MAE:  11.6035
-R²:   0.9084
+RMSE: 16.9831
+MAE:  12.6204
+RÂ²:   0.9261
 
 --- Test Set ---
-RMSE: 16.1286
-MAE:  11.3493
-R²:   0.9123
+RMSE: 17.3433
+MAE:  12.5736
+RÂ²:   0.9246
 
